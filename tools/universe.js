@@ -4,10 +4,13 @@ const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
 const readline = require('readline');
+const mappingmod =  require('./mappingmod.js');
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
+
+
 
 function ask(question, placeholder) {
     return new Promise((resolve) => {
@@ -102,33 +105,16 @@ async function main() {
             console.error(error)
         }
 
-        let mapingdata = `{
-            position: { x:${xz.x},z:${xz.z}},
+        let mapingdata = {
+            position: { x:xz.x,z:xz.z},
             credits: "https://www.turbosquid.com/",
-            url: "${finaljs}",
-        }`
-
-        var string = fs.readFileSync("src/universe_parts/mapping.js").toString();
-        string=string.replace(/local_part\ *=\ *\"https:\/\/threeuniverse.org\/"\ *;/,`local_part = "${githubPageUrl}"`)
-        let linebegin=-1;
-        let lineend=-1;
-        string.split('\n').forEach((line,index)=>{
-            if(line.search("//TODO:BEGIN APPEND //"))
-                linebegin =index;
-            if(line.search("//TODO:END APPEND //"))
-            lineend =index;
-
-        })
-
-        if(linebegin!=-1&&lineend!=-1){
-            
+            url: finaljs,
         }
 
-
-        
-
-
-        console.log(mapingdata);
+        mappingmod.open();
+        mappingmod.setLocalPart(githubPageUrl);
+        mappingmod.appingNewPartViaMarker(mapingdata);
+        mappingmod.write();
 
     }
 }
