@@ -5,6 +5,7 @@ const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
 const readline = require('readline');
 const mappingmod =  require('./mappingmod.js');
+const partmod = require('./partmod.js');
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -88,6 +89,8 @@ async function main() {
     const finaljs = githubPageUrl+"src/universe_parts/"+partFileName+".js"
     console.log("Final Url will be:",finaljs);
 
+    partmod.createASperePart(partFileName);
+    
     const xz={x:0,z:0}
     {
         const samplex = (Math.random() * 2 - 1 * 10000).toFixed(0)
