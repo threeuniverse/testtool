@@ -6,6 +6,7 @@ const fs = require('fs');
 const readline = require('readline');
 const mappingmod =  require('./mappingmod.js');
 const partmod = require('./partmod.js');
+const seedrandom =  require('seedrandom');
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -54,6 +55,7 @@ async function main() {
         fs.unlinkSync('CNAME')
     }
     
+    let partnamehint=null;
     let githubPageUrl;
     {
         const githubcommonurlre = /https:\/\/github.com\/([A-Za-z0-9]+)\/threeuniverse.git/
@@ -69,11 +71,13 @@ async function main() {
             if (result != null) {
                 const repo = result[1];
                 githubPageUrl = `https://threeuniverse.github.io/${repo}/`
+                partnamehint = repo;
             } else {
 
                 const githubcommonurlre = /https:\/\/github.com\/threeuniverse\/([A-Za-z0-9]+).git/
                 const result = githubcommonurlre.exec(gitorigin)
                 if (result != null) {
+                    partnamehint = repo;
                     const repo = result[1];
                     githubPageUrl = `https://threeuniverse.github.io/${repo}/`
                 }
@@ -85,7 +89,7 @@ async function main() {
     }
 
     githubPageUrl = await ask(`Url git hub page fot the repo [${githubPageUrl}]:`, githubPageUrl)
-    const partFileName = await ask(`Name of the partfile you want to setup [MyPart}]:`,"MyPart")
+    const partFileName = await ask(`Name of the partfile you want to setup [${partnamehint}]:`,partnamehint)
     const finaljs = githubPageUrl+"src/universe_parts/"+partFileName+".js"
     console.log("Final Url will be:",finaljs);
 
@@ -93,9 +97,10 @@ async function main() {
     
     const xz={x:0,z:0}
     {
-        const samplex = (Math.random() * 2 - 1 * 10000).toFixed(0)
-        const sampley = (Math.random() * 2 - 1 * 10000).toFixed(0);
-        const sampleurl = `https://threeuniverse.org/#x:${samplex}&z:${1119}`
+        const prg = new seedrandom()
+        const samplex = ((prg() * 2 - 1) * 10000).toFixed(0)
+        const sampley = ((prg() * 2 - 1) * 10000).toFixed(0);
+        const sampleurl = `https://threeuniverse.org/#x:${samplex}&z:${sampley}`
 
         const answer = await ask(`Enter the sample coordinate url you want to setup the base [${sampleurl}]:`)
         const coordinateUrl = answer == "" ? sampleurl : answer;
@@ -110,7 +115,6 @@ async function main() {
 
         let mapingdata = {
             position: { x:xz.x,z:xz.z},
-            credits: "https://www.turbosquid.com/",
             url: finaljs,
         }
 
@@ -118,7 +122,7 @@ async function main() {
         mappingmod.setLocalPart(githubPageUrl);
         mappingmod.appingNewPartViaMarker(mapingdata);
         mappingmod.write();
-
+        console.log("Modfied maping file, run universepull r=to recive change")
     }
 }
 main();
