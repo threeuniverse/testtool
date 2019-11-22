@@ -122,8 +122,9 @@ async function main() {
         mappingmod.setLocalPart(githubPageUrl);
         mappingmod.appingNewPartViaMarker(mapingdata);
         mappingmod.write();
-        console.log("Modfied maping file, run universepull r=to recive change")
+        console.log("Modfied maping file, run universepull to recive change")
     }
+    rl.close();
 }
 main();
 
