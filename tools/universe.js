@@ -47,7 +47,7 @@ function githubPageOfRepo(gitorigin) {
         const result = githubcommonurlre.exec(gitorigin)
         if (result != null) {
             const user = result[1];
-            return { pageurl: `https://${user}.github.io/threeuniverse/` }
+            return { githubPageUrl: `https://${user}.github.io/threeuniverse/` }
 
         }
     }
@@ -58,7 +58,7 @@ function githubPageOfRepo(gitorigin) {
         const result = githubcommonurlre.exec(gitorigin)
         if (result != null) {
             const repo = result[1];
-            return { pageurl: `https://threeuniverse.github.io/${repo}/`, partnamehint: repo }
+            return { githubPageUrl: `https://threeuniverse.github.io/${repo}/`, partnamehint: repo }
         }
 
     }
@@ -71,7 +71,7 @@ function githubPageOfRepo(gitorigin) {
         if (result != null) {
             partnamehint = repo;
             const repo = result[1];
-            return { githubPageUrl: `https://threeuniverse.github.io/${repo}/`: partnamehint: repo }
+            return { githubPageUrl: `https://threeuniverse.github.io/${repo}/`, partnamehint: repo }
         }
 
     }
@@ -102,7 +102,6 @@ async function main() {
         fs.unlinkSync('CNAME')
     }
 
-    let partnamehint = null;
     let { githubPageUrl, partnamehint } = githubPageOfRepo(gitorigin);
 
     githubPageUrl = await ask(`Url git hub page fot the repo [${githubPageUrl}]:`, githubPageUrl)
@@ -113,11 +112,11 @@ async function main() {
 
     const samplecoordinateUrl = getRandomCoordinateUrl();
     const coordinateUrl = await ask(`Enter the sample coordinate url you want to setup the base [${samplecoordinateUrl}]:`, samplecoordinateUrl)
-
+    const coordinates ={}
     try {
         const xztemp = coordinateUrl.split('#')[1].split('&');
-        xz.x = xztemp[0].split('x:')[1];
-        xz.z = xztemp[1].split('z:')[1];
+        coordinates.x = xztemp[0].split('x:')[1];
+        coordinates.z = xztemp[1].split('z:')[1];
     } catch (error) {
         die("Invalid coordinates")
     }
@@ -133,7 +132,7 @@ async function main() {
     mappingmod.setLocalPart(githubPageUrl);
 
     let mapingdata = {
-        position: { x: xz.x, z: xz.z },
+        position: { x: coordinates.x, z: coordinates.z },
         url: finaljs,
     }
 
@@ -145,7 +144,7 @@ async function main() {
     }
     
     console.log("Modfied maping file ")
-    const { stdout } = await exec(`git remote set-url origin ${gitorigin}`);
+    await exec(`git remote set-url origin ${gitorigin}`);
 
 
     rl.close();
