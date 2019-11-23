@@ -8,7 +8,7 @@
     "start": "webpack-dev-server",
     "build": "webpack -p",
     "push": "webpack-cli -p;git add build/universe.bundle.js; ./versioning.bash; git add build/version.js;  git commit -m 'updated build ';git push",
-    "universe": "tools/universe.js"
+    "universe-partsetup": "tools/universesetup.js"
 
   },
   "keywords": [
